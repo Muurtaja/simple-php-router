@@ -52,6 +52,7 @@ class Router
             $functionArguments = array_slice($params, 1);
             if (is_string($callback) && file_exists($callback)) {
                 return (function ($parameters) use ($callback) {
+                    $body = (object)$_POST;
                     require $callback;
                 })($functionArguments);
             }
