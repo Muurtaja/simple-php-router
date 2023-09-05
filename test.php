@@ -1,2 +1,2 @@
 <?php
-echo $name;
+var_dump($parameters);

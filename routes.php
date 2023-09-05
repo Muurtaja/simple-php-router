@@ -1,12 +1,15 @@
 <?php
 $getRoutes = [
+    '/' => function () {
+        echo "hello"; 
+    },
     'demo' => function () {
         echo "demo";
     },
-    // 'test' => "test.php"
+    'test/{id}/{name}' => "test.php"
 ];
 $postRoutes = [
-    'demo' => function () {
+    'demos' => function ($body) {
         echo "lol";
     }
 ];

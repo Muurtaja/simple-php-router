@@ -34,32 +34,32 @@ class Router
     }
     static function get($pattern, $callback)
     {
-        if(!self::$nomatch) return;
-        if ($_SERVER['REQUEST_METHOD'] != 'GET') {
-            throw new Exception($_SERVER['REQUEST_METHOD'] . " method not allowed for this routes", 501);
-        }
         self::process($pattern, $callback);
     }
     static function post($pattern, $callback)
     {
-        if(!self::$nomatch) return;
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-            throw new Exception($_SERVER['REQUEST_METHOD'] . " method not allowed for this routes", 501);
-        }
-        self::process($pattern, $callback);
+        self::process($pattern, $callback, 'POST');
     }
-    private static function process($pattern, $callback)
+    private static function process($pattern, $callback, $method = 'GET')
     {
+        if (!self::$nomatch) return;
         $params = self::getParams($pattern);
         if ($params) {
+            if ($_SERVER['REQUEST_METHOD'] != $method) {
+                throw new Exception($_SERVER['REQUEST_METHOD'] . " method not allowed for this routes", 501);
+            }
             self::$nomatch = false;
             $functionArguments = array_slice($params, 1);
+            if (is_string($callback) && file_exists($callback)) {
+                return (function ($parameters) use ($callback) {
+                    require $callback;
+                })($functionArguments);
+            }
             if (is_callable($callback)) {
                 if ($_SERVER['REQUEST_METHOD'] == 'POST')  array_unshift($functionArguments, (object)$_POST);
                 return $callback(...$functionArguments);
             }
             throw new Exception("No action found for this route", 200);
-            
         }
     }
     static function notFound()
